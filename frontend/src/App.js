@@ -1,21 +1,14 @@
 import { useCallback } from "react";
 import BuildBlock from "./components/BuildBlock/BuildBlock";
 import { useBlockData } from "./store/blockDataContext";
-import { dragContexts } from "./utils/gragDataUtils";
+import { dragContexts, getDragDataFromEvent } from "./utils/dragDataUtils";
 import { v4 as uuid } from 'uuid';
-
-const getDragDataFromEvent = (event) => {
-  const dataString = event.dataTransfer.getData("text/plain")
-  if (!dataString) return {}
-  const data = JSON.parse(dataString)
-  const rect = event.currentTarget.getBoundingClientRect()
-  const x = event.clientX - rect.left - (data.offsetX || 0)
-  const y = event.clientY - rect.top - (data.offsetY || 0)
-  return { data, x, y }
-}
+import { syntaxHighlight } from "./utils/jsonUtils";
 
 function App() {
   const [blockData, setBlockData] = useBlockData()
+
+  console.log({ blockData })
 
   const onDragOverHandler = useCallback((event) => {
     event.preventDefault()
@@ -50,6 +43,39 @@ function App() {
     event.preventDefault()
   }, [])
 
+  const renderBlockTree = useCallback(() => {
+    const renderChildren = (children) => {
+      if (!children) return null
+      return children.map(child => (
+        <BuildBlock
+          id={child.id}
+          key={child.id}
+          blockType={child.blockType}
+          className={'placed-block nested-block'}
+          dragContext={dragContexts.nested}
+          data-block-type={child.blockType}
+          draggable={false}
+        >
+          {renderChildren(child.children)}
+        </BuildBlock>
+      ))
+    }
+
+    return blockData.map(item => (
+      <BuildBlock
+        id={item.id}
+        key={item.id}
+        blockType={item.blockType}
+        className={'placed-block root-block'}
+        dragContext={dragContexts.grid}
+        style={{ '--pos-x': `${item.x}px`, '--pos-y': `${item.y}px` }}
+        data-block-type={item.blockType}
+      >
+        {renderChildren(item.children)}
+      </BuildBlock>
+    ))
+  }, [blockData])
+
   return (
     <div className="app">
       <header className="main-header">
@@ -59,29 +85,28 @@ function App() {
         <nav role="menu" className="menu">
           <div className="block-select-menu">
             <p className="block-select-menu-title">Блоки</p>
-            <BuildBlock className={'select-block'}/>
-            <BuildBlock className={'select-block'}/>
-            <BuildBlock className={'select-block'}/>
-            <BuildBlock className={'select-block'}/>
+            <BuildBlock className={'select-block'} data-block-type={"NONE"}/>
+            <BuildBlock className={'select-block'} data-block-type={"NONE"}/>
+            <BuildBlock className={'select-block'} data-block-type={"NONE"}/>
+            <BuildBlock className={'select-block'} data-block-type={"NONE"}/>
           </div>
         </nav>
-        <div className="build-panel-wrapper">
-          <div
-            className="build-panel">
-            <div className="grid"
-             onDrop={onDropHandler}
-             onDragOver={onDragOverHandler}
-             onDragEnter={onDragEnterHandler}>
-              {blockData.map(item => (
-                <BuildBlock
-                  id={item.id}
-                  key={item.id}
-                  blockType={item.blockType}
-                  className={'placed-block root-block'}
-                  dragContext={dragContexts.grid}
-                  style={{ '--pos-x': `${item.x}px`, '--pos-y': `${item.y}px` }}/>)
-              )}
+        <div className="build-section">
+          <div className="build-panel-wrapper">
+            <div
+              className="build-panel">
+              <div className="grid"
+              onDrop={onDropHandler}
+              onDragOver={onDragOverHandler}
+              onDragEnter={onDragEnterHandler}>
+                {renderBlockTree()}
+              </div>
             </div>
+          </div>
+          <div className="result">
+            <pre
+            className="json"
+            dangerouslySetInnerHTML={{ __html: syntaxHighlight(JSON.stringify(blockData, null, 4))}}></pre>
           </div>
         </div>
       </div>

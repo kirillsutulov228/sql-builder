@@ -35,7 +35,7 @@ $headerHeight: 56px;
 
 .content {
   display: flex;
-  .menu, .build-panel-wrapper {
+  .menu, .build-section {
     height: calc(100vh - $headerHeight);
     height: calc(100dvh - $headerHeight);
     box-sizing: border-box;
@@ -47,12 +47,20 @@ $headerHeight: 56px;
     flex: 0 0 auto;
     background-color: #ffffff;
   }
-  .build-panel-wrapper {
+  .build-section {
     flex: 1;
+  }
+  .build-panel-wrapper {
+    
+    height: 60%;
     box-sizing: border-box;
     overflow: hidden;
     padding: 0;
     background-color: #f0f0f0;
+  }
+  .result {
+    height: 40%;
+    overflow: auto;
   }
   .build-panel {
     width: 100%;
@@ -73,4 +81,12 @@ $headerHeight: 56px;
     margin: 16px 0;
     font-size: 16px;
   }
+}
+
+.json {
+  .string { color: green; }
+  .number { color: darkorange; }
+  .boolean { color: blue; }
+  .null { color: magenta; }
+  .key { color: red; }
 }
