@@ -6,6 +6,10 @@ export const dragContexts = {
   nested: "NESTED"
 }
 
+export const blockTypes = {
+  SELECT: 'SELECT'
+}
+
 export function getBlockItemById(blockData, id) {
   let result = null
   function traverseNode (item) {
@@ -19,21 +23,31 @@ export function getBlockItemById(blockData, id) {
       traverseNode(child)
     }
   }
-  for (const item of blockData) {
-    traverseNode(item)
+
+  if (blockData instanceof Array) {
+    for (const item of blockData) {
+      traverseNode(item)
+    }
+  } else {
+    traverseNode(blockData)
   }
+
   return result
 }
 
 export const withAddChildById = produce((blockData, id, child) => {
   const selectedBlock = getBlockItemById(blockData, id)
   if (!selectedBlock.children) selectedBlock.children = []
-  selectedBlock.children.push(child) 
+  selectedBlock.children.push(child)
+  selectedBlock.children.sort((a, b) => a.x - b.x)
 })
 
 export const withoutChildById = produce((blockData, id) => {
   const child = getBlockItemById(blockData, id)
-  const parent = getBlockItemById(child.parentId)
+  if (!child.parentId) {
+    return blockData.filter(item => item.id !== id)
+  }
+  const parent = getBlockItemById(blockData, child.parentId)
   parent.children = parent.children.filter(item => item.id !== id)
 })
 
@@ -45,4 +59,36 @@ export const getDragDataFromEvent = (event) => {
   const x = event.clientX - rect.left - (data.offsetX || 0)
   const y = event.clientY - rect.top - (data.offsetY || 0)
   return { data, x, y }
+}
+
+export const mapBlockData = (blockData, mapper) => {
+  const newTree = []
+  const traverse = (item) => {
+    const result = mapper({ ...item })
+    if (item.children) {
+      result.children = []
+      for (const child of item.children) {
+        result.children.push(traverse(child))
+      }
+    }
+    return result
+  }
+  for (const item of blockData) {
+    newTree.push(traverse(item))
+  }
+  return newTree
+}
+
+export const withRecalculatedNestedPositions = (blockData) => {
+  return mapBlockData(blockData, (item) => {
+    if (!item.parentId) return item
+    const containerRect = document.getElementById(item.id).getBoundingClientRect()
+    const parentContainerRect = document.getElementById(item.parentId).getBoundingClientRect()
+    
+    return {
+      ...item,
+      x: containerRect.x - parentContainerRect.x,
+      y: containerRect.y -parentContainerRect.y
+    }
+  })
 }

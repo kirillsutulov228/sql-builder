@@ -1,9 +1,10 @@
 import classNames from 'classnames'
 import './BuildBlock.scss'
-import { useCallback, useState } from 'react'
-import { dragContexts, withAddChildById } from '../../utils/dragDataUtils'
+import { useCallback, useRef, useState } from 'react'
+import { dragContexts, getBlockItemById, getDragDataFromEvent, withAddChildById, withRecalculatedNestedPositions, withoutChildById } from '../../utils/dragDataUtils'
 import { useBlockData } from '../../store/blockDataContext'
 import { v4 as uuid } from 'uuid'
+import { useSelectContext } from '../../store/selectContext'
 
 export default function BuildBlock ({
   className,
@@ -14,8 +15,10 @@ export default function BuildBlock ({
   draggable = true,
   ...rest
 }) {
+  const elemRef = useRef(null)
   const [blockData, setBlockData] = useBlockData()
   const [isDragging, setIsDragging] = useState(false)
+  const [selectData, setSelectData] = useSelectContext()
 
   const onDragStartHandler = useCallback((event) => {
     const rect = event.target.getBoundingClientRect()
@@ -23,6 +26,7 @@ export default function BuildBlock ({
     const offsetY = event.clientY - rect.top
     event.dataTransfer.setData('text/plain', JSON.stringify({ blockType, dragContext, id, offsetX, offsetY }))
     setIsDragging(true)
+    event.stopPropagation()
   }, [blockType, dragContext, id])
 
   const onDragEndHandler = useCallback((event) => {
@@ -30,17 +34,54 @@ export default function BuildBlock ({
   }, [])
 
   const onDropHandler = useCallback((event) => {
-    const data = JSON.parse(event.dataTransfer.getData('text/plain'))
-    if ((dragContext === dragContexts.grid || dragContext === dragContexts.nested) && data.dragContext === dragContexts.menu) {
+    if (dragContext === dragContexts.menu) return
+
+    const { data, x, y } = getDragDataFromEvent(event)
+    if (data.id === id) return
+    if (data.dragContext === dragContexts.menu) {
       event.stopPropagation()
-      const newBlockDataState = withAddChildById(blockData, id, {
+      const item = {
         id: uuid(),
         blockType: data.blockType,
-        parentId: id 
-      })
-      setBlockData(newBlockDataState)
+        parentId: id,
+        x,
+        y
+      }
+      const newBlockDataState = withAddChildById(
+        withRecalculatedNestedPositions(
+          blockData
+        ), id, item
+      )
+      setBlockData(() => newBlockDataState)
+      return setTimeout(() => setBlockData((data) => withRecalculatedNestedPositions(data)))
+    }
+    
+    if (data.dragContext === dragContexts.nested || data.dragContext === dragContexts.grid) {
+      event.stopPropagation()
+      const recalculated = withRecalculatedNestedPositions(blockData)
+      let moved = getBlockItemById(recalculated, data.id)
+      const withoutMoved = withoutChildById(recalculated, moved.id)
+      try {
+        const newBlockData = withAddChildById(withoutMoved, id, {
+          ...moved,
+          parentId: id,
+          x,
+          y
+        })
+        setBlockData(newBlockData)
+        setTimeout(() => setBlockData((data) => withRecalculatedNestedPositions(data)))
+      } catch (err) {
+        console.warn('Нарушение уровня вложенности')
+      }
     }
   }, [blockData, dragContext, id, setBlockData])
+
+  const selectHandler = useCallback((event) => {
+    if (dragContext === dragContexts.grid || dragContext === dragContexts.nested) {
+      setSelectData({ element: elemRef.current, id, dragContext })
+      event.stopPropagation()
+    }
+  }, [dragContext, id, setSelectData])
 
   return (
     <div
@@ -51,6 +92,8 @@ export default function BuildBlock ({
       onDragEnd={onDragEndHandler}
       onDrop={onDropHandler}
       draggable={draggable}
+      onClick={selectHandler}
+      ref={elemRef}
       {...rest}>
         <div className='block-type'>{blockType}</div>
       {children}

@@ -42,9 +42,10 @@ $headerHeight: 56px;
   }
   .menu {
     width: 248px;
-    padding: 0 24px;
+    padding: 12px 24px;
     box-sizing: border-box;
     flex: 0 0 auto;
+    overflow: auto;
     background-color: #ffffff;
   }
   .build-section {
@@ -80,6 +81,26 @@ $headerHeight: 56px;
   .block-select-menu-title {
     margin: 16px 0;
     font-size: 16px;
+  }
+  .info-menu {
+    background-color: #ffffff;
+    position: absolute;
+    z-index: 2;
+    top: 4px;
+    right: 4px;
+    border-radius: 4px;
+    overflow: hidden;
+    .item-container > * {
+      position: static !important;
+      margin: 4px !important;
+    }
+    .item-delete-button {
+      display: block;
+      width: calc(100% - 8px);
+      outline: none;
+      margin: 8px 4px;
+      padding: 4px;
+    }
   }
 }
 

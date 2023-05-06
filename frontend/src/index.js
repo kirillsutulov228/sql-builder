@@ -4,12 +4,15 @@ import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BlockDataProvider } from './store/blockDataContext';
+import { SelectContextProvider } from './store/selectContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BlockDataProvider>
-      <App />
+      <SelectContextProvider>
+        <App />
+      </SelectContextProvider>
     </BlockDataProvider>
   </React.StrictMode>
 );
