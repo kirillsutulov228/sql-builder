@@ -1,0 +1,18 @@
+using Microsoft.AspNetCore.Mvc;
+
+[Route("/api")]
+public class ExampleController : Controller
+{
+  private ExampleService _exampleService;
+  
+  public ExampleController(ExampleService exampleService)
+  {
+    _exampleService = exampleService;
+  }
+
+  [HttpGet("hello")]
+  public IActionResult Hello()
+  {
+    return base.Ok(_exampleService.SayHello());
+  }
+}
