@@ -1,14 +1,30 @@
 import { useCallback, useEffect } from "react";
 import BuildBlock from "./components/BuildBlock/BuildBlock";
 import { useBlockData } from "./store/blockDataContext";
-import { dragContexts, getBlockItemById, getDragDataFromEvent, mapBlockData, withoutChildById } from "./utils/dragDataUtils";
+import { dragContexts, getBlockItemById, getDragDataFromEvent, withoutChildById } from "./utils/dragDataUtils";
 import { v4 as uuid } from 'uuid';
 import { syntaxHighlight } from "./utils/jsonUtils";
 import { useSelectContext } from "./store/selectContext";
+import { useDebouncedCallback } from "./utils/hooks";
+import { api } from "./utils/axios";
 
 function App() {
   const [blockData, setBlockData] = useBlockData()
   const [selectData, setSelectData] = useSelectContext()
+
+  const fetchQuery = useDebouncedCallback(async () => {
+    if (!blockData) return
+    try {
+      const { data } = await api.post('/query/parse', blockData);
+      console.log({ data });
+    } catch (err) {
+      console.error(err)
+    }
+  }, 500, [blockData])
+
+  useEffect(() => {
+    fetchQuery();
+  }, [fetchQuery])
 
   const onDragOverHandler = useCallback((event) => {
     event.preventDefault()
