@@ -157,10 +157,13 @@ class SyntAnalyzer
         field._nodes = FieldNode();
         nodes.Add(field);
         Expect(BlockType.FROM);
-        nodes.Add(FromNode());
-        if (_curToken._type == BlockType.WHERE)
+        if (_prevToken._id != null)
         {
-            nodes.Add(WhereNode());
+            nodes.Add(FromNode());
+            if (_curToken._type == BlockType.WHERE)
+            {
+                nodes.Add(WhereNode());
+            }
         }
         select._nodes = nodes;
         return select;
@@ -169,11 +172,11 @@ class SyntAnalyzer
     private List<Node> FieldNode()
     {
         List<Node> fields = new List<Node>();
-        NextToken();
-        while (_prevToken._type == BlockType.FIELD_NAME)
+        //NextToken();
+        while (_curToken._type == BlockType.FIELD_NAME)
         {
-            fields.Add(new Node(_prevToken._type, _prevToken._value));
             NextToken();
+            fields.Add(new Node(_prevToken._type, _prevToken._value));
             //Expect(BlockType.FIELD_NAME);
         }
         return fields;
@@ -183,7 +186,15 @@ class SyntAnalyzer
         Node from = new Node(_prevToken._type, _prevToken._value);
         List<Node> nodes = new List<Node>();
         Expect(BlockType.TABLE_NAME);
-        nodes.Add(new Node(_prevToken._type, _prevToken._value));
+        Node table = new Node(_prevToken._type, _prevToken._value);
+        List<Node> t_nodes = new List<Node>();
+        while(_curToken._type == BlockType.TABLE_NAME)
+        {
+            NextToken();
+            t_nodes.Add(new Node(_prevToken._type, _prevToken._value));
+        }
+        table._nodes = t_nodes;
+        nodes.Add(table);
         from._nodes = nodes;
         return from;
     }
@@ -218,13 +229,10 @@ class Node
 
     public List<Node>? _nodes { get; set; }
 
-    private static string _space = "";
-
     public Node(BlockType type, string? value = "")
     {
         _type = type;
         _value = value;
-        _space = "";
     }
 
     public Node() { }
@@ -234,42 +242,44 @@ class Node
         _nodes = nodes;
     }
 
-    public string toSql()
+    public string toSql(string space = "")
     {
+        string _space = space;
         string ret = "";
         if (_nodes != null && _nodes.Count != 0)
             foreach (Node node in _nodes)
             {
-                ret += node.typeToString() + node.toSql();
+                ret += node.typeToString(ref _space) + node.toSql(_space);
             }
 
         return ret;
     }
 
-    private string typeToString()
+    private string typeToString(ref string space)
     {
         string ret = "";
         switch (_type)
         {
             case BlockType.SELECT:
-                ret += $"{_space}SELECT ";
+                ret += $"{space}SELECT ";
                 break;
             case BlockType.FIELD_NAME:
                 ret += $"{_type} {_value}";
                 if (_nodes != null && _nodes.Count != 0) ret += ", ";
                 break;
             case BlockType.FROM:
-                ret += $"\n{_space}FROM ";
+                ret += $"\n{space}FROM ";
                 break;
             case BlockType.TABLE_NAME:
                 ret += $"{_type} {_value}";
+                if (_nodes != null && _nodes.Count != 0) ret += ", ";
                 break;
             case BlockType.WHERE:
-                ret += $"\n{_space}WHERE ";
+                ret += $"\n{space}WHERE ";
                 break;
             case BlockType.CONDITION:
                 ret += $"{_type} {_value}\n";
-                if (_nodes != null && _nodes.Count != 0) _space += "\t";
+                if (_nodes != null && _nodes.Count != 0) space += "\t";
                 break;
 
         }
