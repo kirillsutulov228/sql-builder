@@ -1,12 +1,18 @@
 ﻿public class SqlTranslatorService
 {
-    public List<RawQueryNode> Translate(List<RawQueryNode> rawQueryNodes)
+    public Tuple<String, ErrorNode> Translate(List<RawQueryNode> rawQueryNodes)
     {
         LexParser parser = new LexParser();
         List<Lexem> tokens = parser.Parse(rawQueryNodes);
         SyntAnalyzer syntAnalyzer = new SyntAnalyzer();
         Node syntTree = syntAnalyzer.Analyze(tokens);
-        return rawQueryNodes;
+        Console.WriteLine(syntTree.toSql());
+        Console.WriteLine(syntAnalyzer.error.Item2);
+        ErrorNode error = new ErrorNode();
+        error.blockId = syntAnalyzer.error.Item1;
+        error.message = syntAnalyzer.error.Item2;
+
+        return new Tuple<string, ErrorNode>(syntTree.toSql(), error);
     }
 }
 
@@ -67,6 +73,7 @@ class SyntAnalyzer
 {
     List<Lexem> _tokens = new List<Lexem>();
     Lexem _curToken, _prevToken;
+    public Tuple<string, string> error = new Tuple<string, string>("", "");
 
     public SyntAnalyzer() { }
 
@@ -95,6 +102,7 @@ class SyntAnalyzer
 
     private void Reset()
     {
+        _tokens = new List<Lexem>();
         _curToken = new Lexem();
     }
     private void Expect(BlockType type)
@@ -102,22 +110,39 @@ class SyntAnalyzer
         if (_curToken._type == type)
         {
             NextToken();
-            return;
         }
-        else Error(_curToken._id.ToString());
-
+        else
+        {
+            if (_curToken._id == null)
+            {
+                _prevToken = _curToken;
+                Error("-1");
+            }
+            else Error(_curToken._id);
+        }
     }
 
     private void Error(string s)
     {
-        //throw new Exception($"Error: {s}");
-        return;
+        if (s == "-1")
+        {
+            error = new Tuple<string, string>(s, "Ожидаются недостающие команды.");
+        }
+        else
+        {
+            string errType = Constants.Types.FirstOrDefault(x => x.Value == (int)_curToken._type).Key;
+            error = new Tuple<string, string>(s, $"Обнаружен командный блок {errType} находящийся в неправильном положении.");
+        }
+        Reset();
     }
 
     private Node Block()
     {
+        Node query = new Node(BlockType.QUERY);
         Expect(BlockType.QUERY);
-        Node query = SelectNode();
+        List<Node> nodes = new List<Node>();
+        nodes.Add(SelectNode());
+        query._nodes = nodes;
         return query;
     }
 
@@ -127,10 +152,13 @@ class SyntAnalyzer
         Node select = new Node(_prevToken._type, _prevToken._value);
         List<Node> nodes = new List<Node>();
         Expect(BlockType.FIELD_NAME);
-        nodes.Add(new Node(_prevToken._type, _prevToken._value));
+        Node field = new Node(_prevToken._type, _prevToken._value);
+        //nodes.Add(new Node(_prevToken._type, _prevToken._value));
+        field._nodes = FieldNode();
+        nodes.Add(field);
         Expect(BlockType.FROM);
         nodes.Add(FromNode());
-        if(_curToken._type == BlockType.WHERE)
+        if (_curToken._type == BlockType.WHERE)
         {
             nodes.Add(WhereNode());
         }
@@ -138,6 +166,18 @@ class SyntAnalyzer
         return select;
     }
 
+    private List<Node> FieldNode()
+    {
+        List<Node> fields = new List<Node>();
+        NextToken();
+        while (_prevToken._type == BlockType.FIELD_NAME)
+        {
+            fields.Add(new Node(_prevToken._type, _prevToken._value));
+            NextToken();
+            //Expect(BlockType.FIELD_NAME);
+        }
+        return fields;
+    }
     private Node FromNode()
     {
         Node from = new Node(_prevToken._type, _prevToken._value);
@@ -174,15 +214,20 @@ class SyntAnalyzer
 class Node
 {
     public BlockType _type { get; set; }
-    public string? _value { get; set; }
+    public string? _value { get; set; } = "";
 
     public List<Node>? _nodes { get; set; }
 
-    public Node(BlockType type, string? value)
+    private static string _space = "";
+
+    public Node(BlockType type, string? value = "")
     {
         _type = type;
         _value = value;
+        _space = "";
     }
+
+    public Node() { }
 
     public Node(List<Node> nodes)
     {
@@ -191,7 +236,44 @@ class Node
 
     public string toSql()
     {
-        return "";
+        string ret = "";
+        if (_nodes != null && _nodes.Count != 0)
+            foreach (Node node in _nodes)
+            {
+                ret += node.typeToString() + node.toSql();
+            }
+
+        return ret;
+    }
+
+    private string typeToString()
+    {
+        string ret = "";
+        switch (_type)
+        {
+            case BlockType.SELECT:
+                ret += $"{_space}SELECT ";
+                break;
+            case BlockType.FIELD_NAME:
+                ret += $"{_type} {_value}";
+                if (_nodes != null && _nodes.Count != 0) ret += ", ";
+                break;
+            case BlockType.FROM:
+                ret += $"\n{_space}FROM ";
+                break;
+            case BlockType.TABLE_NAME:
+                ret += $"{_type} {_value}";
+                break;
+            case BlockType.WHERE:
+                ret += $"\n{_space}WHERE ";
+                break;
+            case BlockType.CONDITION:
+                ret += $"{_type} {_value}\n";
+                if (_nodes != null && _nodes.Count != 0) _space += "\t";
+                break;
+
+        }
+        return ret;
     }
 }
 
