@@ -278,7 +278,7 @@ class Node
                 ret += $"<br/>{space}WHERE ";
                 break;
             case BlockType.CONDITION:
-                ret += $"{_type} {_value}\n";
+                ret += $"{_type} {_value}<br/>";
                 if (_nodes != null && _nodes.Count != 0) space += "    ";
                 break;
 
