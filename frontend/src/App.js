@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import BuildBlock from "./components/BuildBlock/BuildBlock";
 import { useBlockData } from "./store/blockDataContext";
 import { dragContexts, getBlockItemById, getDragDataFromEvent, withoutChildById } from "./utils/dragDataUtils";
@@ -11,11 +11,13 @@ import { api } from "./utils/axios";
 function App() {
   const [blockData, setBlockData] = useBlockData()
   const [selectData, setSelectData] = useSelectContext()
+  const [result, setResult] = useState(null);
 
   const fetchQuery = useDebouncedCallback(async () => {
     if (!blockData) return
     try {
       const { data } = await api.post('/query/parse', blockData);
+      setResult(data.item1)
       console.log({ data });
     } catch (err) {
       console.error(err)
@@ -150,9 +152,10 @@ function App() {
             </div>
           </div>
           <div className="result">
-            <pre
+            {result}
+            {/* <pre
             className="json"
-            dangerouslySetInnerHTML={{ __html: syntaxHighlight(JSON.stringify(blockData, null, 4))}}></pre>
+            dangerouslySetInnerHTML={{ __html: syntaxHighlight(JSON.stringify(blockData, null, 4))}}></pre> */}
           </div>
         </div>
       </div>
