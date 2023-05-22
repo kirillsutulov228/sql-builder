@@ -1,6 +1,6 @@
 ﻿public class SqlTranslatorService
 {
-    public Tuple<String, ErrorNode> Translate(List<RawQueryNode> rawQueryNodes)
+    public (String, ErrorNode) Translate(List<RawQueryNode> rawQueryNodes)
     {
         LexParser parser = new LexParser();
         List<Lexem> tokens = parser.Parse(rawQueryNodes);
@@ -12,7 +12,7 @@
         error.blockId = syntAnalyzer.error.Item1;
         error.message = syntAnalyzer.error.Item2;
 
-        return new Tuple<string, ErrorNode>(syntTree.toSql(), error);
+        return new (syntTree.toSql(), error);
     }
 }
 
@@ -268,18 +268,18 @@ class Node
                 if (_nodes != null && _nodes.Count != 0) ret += ", ";
                 break;
             case BlockType.FROM:
-                ret += $"\n{space}FROM ";
+                ret += $"<br/>{space}FROM ";
                 break;
             case BlockType.TABLE_NAME:
                 ret += $"{_type} {_value}";
                 if (_nodes != null && _nodes.Count != 0) ret += ", ";
                 break;
             case BlockType.WHERE:
-                ret += $"\n{space}WHERE ";
+                ret += $"<br/>{space}WHERE ";
                 break;
             case BlockType.CONDITION:
-                ret += $"{_type} {_value}\n";
-                if (_nodes != null && _nodes.Count != 0) space += "\t";
+                ret += $"{_type} {_value}<br/>";
+                if (_nodes != null && _nodes.Count != 0) space += "    ";
                 break;
 
         }
