@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import './BuildBlock.scss'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { buildPropertiesByBlockType, dragContexts, getBlockItemById, getDragDataFromEvent, withAddChildById, withRecalculatedNestedPositions, withoutChildById } from '../../utils/dragDataUtils'
 import { useBlockData } from '../../store/blockDataContext'
 import { v4 as uuid } from 'uuid'
@@ -13,6 +13,7 @@ export default function BuildBlock ({
   dragContext = dragContexts.menu,
   id,
   draggable = true,
+  properties = {},
   ...rest
 }) {
   const elemRef = useRef(null)
@@ -49,9 +50,7 @@ export default function BuildBlock ({
         properties: buildPropertiesByBlockType(data.blockType)
       }
       const newBlockDataState = withAddChildById(
-        withRecalculatedNestedPositions(
-          blockData
-        ), id, item
+        blockData, id, item
       )
       setBlockData(() => newBlockDataState)
       return setTimeout(() => setBlockData((data) => withRecalculatedNestedPositions(data)))
@@ -59,7 +58,7 @@ export default function BuildBlock ({
     
     if (data.dragContext === dragContexts.nested || data.dragContext === dragContexts.grid) {
       event.stopPropagation()
-      const recalculated = withRecalculatedNestedPositions(blockData)
+      const recalculated = blockData
       let moved = getBlockItemById(recalculated, data.id)
       const withoutMoved = withoutChildById(recalculated, moved.id)
       try {
@@ -97,7 +96,10 @@ export default function BuildBlock ({
       onClick={selectHandler}
       ref={elemRef}
       {...rest}>
-        <div className='block-type'>{blockType}</div>
+        <div className='block-type'>
+          {blockType}
+          {Object.values(properties).map(prop => <div className='prop'>{prop.title}: {prop.value}</div>)}
+        </div>
       {children}
     </div>
   )
