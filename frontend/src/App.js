@@ -13,12 +13,13 @@ function App() {
   const [blockData, setBlockData] = useBlockData()
   const [selectData, setSelectData] = useSelectContext()
   const [result, setResult] = useState(null);
-
+  const [error, setError] = useState(null)
   const fetchQuery = useDebouncedCallback(async () => {
     if (!blockData) return
     try {
       const { data } = await api.post('/query/parse', blockData);
       setResult(data.item1)
+      setError(data?.item2?.message)
       console.log({ data });
     } catch (err) {
       console.error(err)
@@ -187,6 +188,7 @@ function App() {
           </div>
           <div className="result">
             {<pre dangerouslySetInnerHTML={{__html: result}}></pre>}
+            {error && <p className="result-error">{error}</p>}
             <pre
             className="json"
             dangerouslySetInnerHTML={{ __html: syntaxHighlight(JSON.stringify(blockData, null, 4))}}></pre>
