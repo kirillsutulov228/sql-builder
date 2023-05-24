@@ -17,5 +17,11 @@ public class SqlTranslatorController : Controller
         return base.Ok(_sqlTranslatorService.Translate(rawQueryNode));
     }
 
+    [HttpPost("query/table/{name}")]
+    public IActionResult SqlQueryResult(String sqlQuery)
+    {
+        return base.Ok(sqlQuery);
+    }
+
 
 }
