@@ -152,7 +152,7 @@ function App() {
             </div>
           </div>
           <div className="result">
-            {result}
+            {<pre dangerouslySetInnerHTML={{__html: result}}></pre>}
             {/* <pre
             className="json"
             dangerouslySetInnerHTML={{ __html: syntaxHighlight(JSON.stringify(blockData, null, 4))}}></pre> */}
