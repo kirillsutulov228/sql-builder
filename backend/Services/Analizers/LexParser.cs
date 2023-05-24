@@ -1,8 +1,6 @@
 ﻿class LexParser
 {
-    private string _blockId = "";
     private List<Lexem> _lexems = new List<Lexem>();
-    private string _parentId = "";
 
     public LexParser() { }
 
@@ -18,14 +16,31 @@
     private void getLexems(RawQueryNode curNode)
     {
         if (curNode == null) return;
-        _blockId = curNode.Id;
-        _parentId = curNode.ParentId;
-        _lexems.Add(new Lexem(findType(curNode.BlockType), curNode.Id));
+        //_blockId = curNode.Id;
+        //_parentId = curNode.ParentId;
+        Lexem lexem = new Lexem();
+        lexem._type = findType(curNode.BlockType);
+        lexem._id = curNode.Id;
+        lexem._value = getProperty(curNode.Properties);
+        _lexems.Add(lexem);
         if (curNode.Children == null) return;
         foreach (RawQueryNode node in curNode.Children)
         {
             getLexems(node);
         }
+    }
+
+    private Dictionary<string, string> getProperty(Dictionary<string,PropertyType>? properties)
+    {
+        Dictionary<string, string> _property = new Dictionary<string, string>();
+        if (properties != null && properties.Count != 0)
+        {
+            foreach (KeyValuePair<string, PropertyType> prop in properties)
+            {
+                _property.Add(prop.Key, prop.Value.value);
+            }
+        }
+        return _property;
     }
 
     private BlockType findType(string type)

@@ -1,11 +1,11 @@
 ﻿class Node
 {
     public BlockType _type { get; set; }
-    public string? _value { get; set; } = "";
+    public Dictionary<string, string>? _value { get; set; }
 
     public List<Node>? _nodes { get; set; }
 
-    public Node(BlockType type, string? value = "")
+    public Node(BlockType type, Dictionary<string, string>? value = null)
     {
         _type = type;
         _value = value;
@@ -48,21 +48,31 @@
                 ret += $"{space}SELECT ";
                 break;
             case BlockType.FIELD_NAME:
-                ret += $"{_type} {_value}{comma}";
+                foreach(KeyValuePair<string, string> val in _value)
+                {
+                    ret += $"{val.Value}{comma}";
+                }
                 //if (_nodes != null && _nodes.Count != 0) ret += ", ";
                 break;
             case BlockType.FROM:
                 ret += $"<br/>{space}FROM ";
                 break;
             case BlockType.TABLE_NAME:
-                ret += $"{_type} {_value}{comma}";
+                foreach (KeyValuePair<string, string> val in _value)
+                {
+                    ret += $"{val.Value}{comma}";
+                }
                 //if (_nodes != null && _nodes.Count != 0) ret += ", ";
                 break;
             case BlockType.WHERE:
                 ret += $"<br/>{space}WHERE ";
                 break;
             case BlockType.CONDITION:
-                ret += $"{_type} {_value}<br/>";
+                foreach (KeyValuePair<string, string> val in _value)
+                {
+                    ret += $"{val.Value} ";
+                }
+                //ret += $"{_type} {_value}<br/>";
                 if (_nodes != null && _nodes.Count != 0) space += "    ";
                 break;
 
