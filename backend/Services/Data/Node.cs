@@ -75,6 +75,12 @@
                 //ret += $"{_type} {_value}<br/>";
                 if (_nodes != null && _nodes.Count != 0) space += "    ";
                 break;
+            case BlockType.AND:
+                ret += $"<br/>AND ";
+                break;
+            case BlockType.OR:
+                ret += $"<br/>OR ";
+                break;
 
         }
         return ret;

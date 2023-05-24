@@ -13,7 +13,6 @@ public class SqlTranslatorController : Controller
     [HttpPost("query/parse")]
     public IActionResult ParseQueryNode([FromBody] List<RawQueryNode> rawQueryNode)
     {
-
         return base.Ok(_sqlTranslatorService.Translate(rawQueryNode));
     }
 

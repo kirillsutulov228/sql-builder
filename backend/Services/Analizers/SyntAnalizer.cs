@@ -148,7 +148,13 @@
         List<Node> nodes = new List<Node>();
         if ((_tokens.Count != 0 && _tokens != null) || _curToken._type != BlockType.ERROR)
         {
-            nodes.Add(SelectNode());
+            if(_curToken._type == BlockType.AND || _curToken._type == BlockType.OR)
+            {
+                NextToken();
+                nodes.Add(new Node(_prevToken._type, _prevToken._value));
+                if (Expect(BlockType.CONDITION)) nodes.Add(ConditionNode());
+            }
+            else if(_curToken._type == BlockType.SELECT) nodes.Add(SelectNode());
         }
         condition._nodes = nodes;
         return condition;
