@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import BuildBlock from "./components/BuildBlock/BuildBlock";
 import { useBlockData } from "./store/blockDataContext";
-import { buildPropertiesByBlockType, dragContexts, getBlockItemById, getDragDataFromEvent, mapBlockData, withoutChildById } from "./utils/dragDataUtils";
+import { buildPropertiesByBlockType, dragContexts, getBlockItemById, getDragDataFromEvent, mapBlockData, withRecalculatedNestedPositions, withoutChildById } from "./utils/dragDataUtils";
 import { v4 as uuid } from 'uuid';
 import { syntaxHighlight } from "./utils/jsonUtils";
 import { useSelectContext } from "./store/selectContext";
@@ -80,6 +80,7 @@ function App() {
           className={'placed-block nested-block'}
           dragContext={dragContexts.nested}
           data-block-type={child.blockType}
+          properties={child.properties}
           draggable
         >
           {renderChildren(child.children)}
@@ -91,6 +92,7 @@ function App() {
       <BuildBlock
         id={item.id}
         key={item.id}
+        properties={item.properties}
         blockType={item.blockType}
         className={'placed-block root-block'}
         dragContext={dragContexts.grid}
@@ -113,20 +115,25 @@ function App() {
       const itemContainer = document.querySelector('.info-menu .item-container')
       itemContainer.innerHTML = ''
       const elem = selectData.element.cloneNode(true)
+      const childrens = Array.from(elem.querySelectorAll('*'))
+      childrens.forEach(c => c.id = '')
       elem.draggable = false
+      elem.id = ''
       itemContainer.appendChild(elem)
     }
   }, [selectData])
 
   const setPropertyById = useCallback((id, propKey, value) => {
-    setBlockData(mapBlockData(blockData, (item) => {
+    setBlockData(() => mapBlockData(blockData, (item) => {
       if (item.id !== id) return item
       const changedItem = produce(item, (newItem) => { newItem.properties[propKey].value = value })
       return changedItem
     }))
+    
     setSelectData(produce(newSelect => { newSelect.properties[propKey].value = value }))
+    setTimeout(() => setBlockData((data) => withRecalculatedNestedPositions(data)))
   }, [blockData, setBlockData, setSelectData])
-
+  
   return (
     <div className="app">
       <header className="main-header">
