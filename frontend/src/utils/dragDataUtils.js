@@ -7,7 +7,31 @@ export const dragContexts = {
 }
 
 export const blockTypes = {
-  SELECT: 'SELECT'
+  SELECT: 'SELECT',
+  FIELD_NAME: 'FIELD_NAME',
+  TABLE_NAME: 'TABLE_NAME',
+  CONDITION: 'CONDITION'
+}
+
+export function buildPropertiesByBlockType(blockType) {
+  switch (blockType) {
+    case blockTypes.FIELD_NAME:
+      return {
+        value: { title: 'Имя столбца', value: null }
+      }
+    case blockTypes.TABLE_NAME:
+      return {
+        value: { title: 'Имя таблицы', value: null }
+      }
+    case blockTypes.CONDITION:
+      return {
+        first: { title: 'Значение 1', value: null },
+        operation: { title: 'Операция', value: null },
+        second: { title: 'Значение 2', value: null }
+      }
+    default:
+      return {}
+  }
 }
 
 export function getBlockItemById(blockData, id) {

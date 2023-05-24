@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import './BuildBlock.scss'
 import { useCallback, useRef, useState } from 'react'
-import { dragContexts, getBlockItemById, getDragDataFromEvent, withAddChildById, withRecalculatedNestedPositions, withoutChildById } from '../../utils/dragDataUtils'
+import { buildPropertiesByBlockType, dragContexts, getBlockItemById, getDragDataFromEvent, withAddChildById, withRecalculatedNestedPositions, withoutChildById } from '../../utils/dragDataUtils'
 import { useBlockData } from '../../store/blockDataContext'
 import { v4 as uuid } from 'uuid'
 import { useSelectContext } from '../../store/selectContext'
@@ -45,7 +45,8 @@ export default function BuildBlock ({
         blockType: data.blockType,
         parentId: id,
         x,
-        y
+        y,
+        properties: buildPropertiesByBlockType(data.blockType)
       }
       const newBlockDataState = withAddChildById(
         withRecalculatedNestedPositions(
@@ -78,10 +79,11 @@ export default function BuildBlock ({
 
   const selectHandler = useCallback((event) => {
     if (dragContext === dragContexts.grid || dragContext === dragContexts.nested) {
-      setSelectData({ element: elemRef.current, id, dragContext })
+      setSelectData({
+        element: elemRef.current, id, dragContext, properties: getBlockItemById(blockData, id).properties })
       event.stopPropagation()
     }
-  }, [dragContext, id, setSelectData])
+  }, [dragContext, id, setSelectData, blockData])
 
   return (
     <div

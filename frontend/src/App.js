@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import BuildBlock from "./components/BuildBlock/BuildBlock";
 import { useBlockData } from "./store/blockDataContext";
-import { dragContexts, getBlockItemById, getDragDataFromEvent, withoutChildById } from "./utils/dragDataUtils";
+import { buildPropertiesByBlockType, dragContexts, getBlockItemById, getDragDataFromEvent, mapBlockData, withoutChildById } from "./utils/dragDataUtils";
 import { v4 as uuid } from 'uuid';
 import { syntaxHighlight } from "./utils/jsonUtils";
 import { useSelectContext } from "./store/selectContext";
 import { useDebouncedCallback } from "./utils/hooks";
 import { api } from "./utils/axios";
+import { produce } from "immer";
 
 function App() {
   const [blockData, setBlockData] = useBlockData()
@@ -44,6 +45,7 @@ function App() {
         blockType: data.blockType,
         x,
         y,
+        properties: buildPropertiesByBlockType(data.blockType)
       }])
     }
 
@@ -116,6 +118,15 @@ function App() {
     }
   }, [selectData])
 
+  const setPropertyById = useCallback((id, propKey, value) => {
+    setBlockData(mapBlockData(blockData, (item) => {
+      if (item.id !== id) return item
+      const changedItem = produce(item, (newItem) => { newItem.properties[propKey].value = value })
+      return changedItem
+    }))
+    setSelectData(produce(newSelect => { newSelect.properties[propKey].value = value }))
+  }, [blockData, setBlockData, setSelectData])
+
   return (
     <div className="app">
       <header className="main-header">
@@ -132,6 +143,8 @@ function App() {
             <BuildBlock className={'select-block'} blockType={"FIELD_NAME"}/>
             <BuildBlock className={'select-block'} blockType={"WHERE"}/>
             <BuildBlock className={'select-block'} blockType={"CONDITION"}/>
+            <BuildBlock className={'select-block'} blockType={"AND"}/>
+            <BuildBlock className={'select-block'} blockType={"OR"}/>
           </div>
         </nav>
         <div className="build-section">
@@ -140,6 +153,20 @@ function App() {
               {selectData && (
                 <div className="info-menu">
                   <div className="item-container" />
+                  <div className="input-block">
+                    {Object.entries(selectData.properties).map(([key, option]) => {
+                      return (
+                        <div className="text-input-field" key={key}>
+                          <label htmlFor={key}>{option.title || key}</label>
+                          <input
+                            type="text"
+                            name={key}
+                            value={option.value ?? ''}
+                            onChange={(event) => setPropertyById(selectData.id, key, event.target.value)} />
+                        </div>
+                      )
+                    })}
+                  </div>
                   <button className="item-delete-button" type="button" onClick={deleteSelectedById}>Удалить</button>
                 </div>
               )}
@@ -153,9 +180,9 @@ function App() {
           </div>
           <div className="result">
             {<pre dangerouslySetInnerHTML={{__html: result}}></pre>}
-            {/* <pre
+            <pre
             className="json"
-            dangerouslySetInnerHTML={{ __html: syntaxHighlight(JSON.stringify(blockData, null, 4))}}></pre> */}
+            dangerouslySetInnerHTML={{ __html: syntaxHighlight(JSON.stringify(blockData, null, 4))}}></pre>
           </div>
         </div>
       </div>

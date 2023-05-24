@@ -98,8 +98,14 @@ $headerHeight: 56px;
       display: block;
       width: calc(100% - 8px);
       outline: none;
-      margin: 8px 4px;
+      margin: 16px 4px 8px 4px;
       padding: 4px;
+    }
+    .text-input-field {
+      margin: 8px 4px 0 4px;
+      label {
+        display: block;
+      }
     }
   }
 }
