@@ -18,6 +18,7 @@ namespace backend.Migrations
                     taskId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     taskNum = table.Column<int>(type: "INTEGER", nullable: false),
+                    taskName = table.Column<string>(type: "TEXT", nullable: false),
                     taskDescription = table.Column<string>(type: "TEXT", nullable: false),
                     correctAnswer = table.Column<string>(type: "TEXT", nullable: false)
                 },
@@ -34,7 +35,9 @@ namespace backend.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     firstname = table.Column<string>(type: "TEXT", nullable: false),
                     lastname = table.Column<string>(type: "TEXT", nullable: false),
-                    registrationDate = table.Column<DateOnly>(type: "TEXT", nullable: false)
+                    registrationDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    age = table.Column<int>(type: "INTEGER", nullable: false),
+                    hobby = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

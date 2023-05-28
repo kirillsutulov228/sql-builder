@@ -7,5 +7,6 @@ public class User
     public string firstname { get; set; }
     public string lastname { get; set; }
     public DateOnly registrationDate { get; set; }
-
+    public int age { get; set; }
+    public string? hobby { get; set; }
 }

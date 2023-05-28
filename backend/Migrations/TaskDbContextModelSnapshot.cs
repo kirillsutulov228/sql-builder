@@ -30,6 +30,10 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("taskName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("taskNum")
                         .HasColumnType("INTEGER");
 
@@ -44,8 +48,14 @@ namespace backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("age")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("firstname")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("hobby")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("lastname")

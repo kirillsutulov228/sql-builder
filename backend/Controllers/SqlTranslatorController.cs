@@ -4,6 +4,7 @@
 public class SqlTranslatorController : Controller
 {
     private SqlTranslatorService _sqlTranslatorService;
+    private AvaibleTaskService _taskService;
 
     public SqlTranslatorController(SqlTranslatorService sqlTranslatorService)
     {
@@ -22,5 +23,9 @@ public class SqlTranslatorController : Controller
         return base.Ok(sqlQuery);
     }
 
-
+    [HttpPost("tasks")]
+    public IActionResult GetTasks()
+    {
+        return base.Ok(_taskService.GetAvaibleTasks());
+    }
 }
