@@ -6,9 +6,10 @@ public class SqlTranslatorController : Controller
     private SqlTranslatorService _sqlTranslatorService;
     private AvaibleTaskService _taskService;
 
-    public SqlTranslatorController(SqlTranslatorService sqlTranslatorService)
+    public SqlTranslatorController(SqlTranslatorService sqlTranslatorService, AvaibleTaskService taskService)
     {
         _sqlTranslatorService = sqlTranslatorService;
+        _taskService = taskService;
     }
 
     [HttpPost("query/parse")]
@@ -17,13 +18,19 @@ public class SqlTranslatorController : Controller
         return base.Ok(_sqlTranslatorService.Translate(rawQueryNode));
     }
 
-    [HttpPost("query/table/{name}")]
-    public IActionResult SqlQueryResult(String sqlQuery)
+    [HttpPost("task/{taskNumber}")]
+    public IActionResult CheckAnswer(int taskNumber, [FromBody] string query)
     {
-        return base.Ok(sqlQuery);
+        return base.Ok(taskNumber);
     }
 
-    [HttpPost("tasks")]
+    [HttpPost("api/tasks/{taskNum}")]
+    public IActionResult GetTaskByNum(int taskNum)
+    {
+        return base.Ok(_taskService.GetTaskByNum(taskNum));
+    }
+
+    [HttpGet("tasks")]
     public IActionResult GetTasks()
     {
         return base.Ok(_taskService.GetAvaibleTasks());

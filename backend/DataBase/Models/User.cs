@@ -9,4 +9,10 @@ public class User
     public DateOnly registrationDate { get; set; }
     public int age { get; set; }
     public string? hobby { get; set; }
+
+    public bool Equals(User comparableUser)
+    {
+        if (comparableUser.userId != userId) return false;
+        return true;
+    }
 }

@@ -2,6 +2,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddScoped<ExampleService>();
 builder.Services.AddScoped<SqlTranslatorService>();
+builder.Services.AddScoped<AvaibleTaskService>();
+builder.Services.AddDbContext<TaskDbContext>();
 builder.Services.AddCors();
 
 var app = builder.Build();
