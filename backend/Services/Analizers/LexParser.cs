@@ -16,6 +16,11 @@
     private void getLexems(RawQueryNode curNode)
     {
         if (curNode == null) return;
+        if (curNode.BlockType != "QUERY" && curNode.ParentId == null)
+        {
+            _lexems.Add(new Lexem(BlockType.ERROR, curNode.Id));
+            return;
+        }
         //_blockId = curNode.Id;
         //_parentId = curNode.ParentId;
         Lexem lexem = new Lexem();
