@@ -4,10 +4,10 @@
 
     public TableView() { }
 
-    public string GetTable(List<List<(string, string)>> values)
+    public string GetTable(List<Dictionary<string, string>> values)
     {
-        string table = $"{GetLine()}";
-        foreach(List<(string, string)> value in values)
+        string table = $"{GetLine()}{GetRow(values.First(), true)}{GetLine()}";
+        foreach(Dictionary<string, string> value in values)
         {
             table += GetRow(value);
             table += GetLine();
@@ -15,19 +15,19 @@
         return table;
     }
 
-    private string GetLine() { return $"+{new string('-', tableWidth - 2)}+\n"; }
+    private string GetLine() { return $"+{new string('-', tableWidth - 2)}+<br/>"; }
 
-    private string GetRow(List<(string, string)> columns, bool isName = false)
+    private string GetRow(Dictionary<string, string> columns, bool isName = false)
     {
         int width = (tableWidth - columns.Count) / columns.Count;
         string row = "|";
 
         foreach (var column in columns)
         {
-            if(!isName) row += AlignCentre(column.Item2, width) + "|";
-            else row += AlignCentre(column.Item1, width) + "|";
+            if(!isName) row += AlignCentre(column.Value, width) + "|";
+            else row += AlignCentre(column.Key, width) + "|";
         }
-        return $"{row}\n";
+        return $"{row}<br/>";
     }
 
     private string AlignCentre(string text, int width)
