@@ -15,9 +15,16 @@ function Builder({ taskMode = false }) {
   const [selectData, setSelectData] = useSelectContext()
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null)
-
+  const [taskData, setTaskData] = useState(null)
   const [task, setTask] = useState(null)
   const { taskNum } = useParams();
+
+  useEffect(() => {
+    return () => {
+      setTaskData(null)
+      setBlockData([])
+    }
+  }, [setBlockData])
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -28,7 +35,6 @@ function Builder({ taskMode = false }) {
       } catch(err) {
         console.error(err)
       }
-      
     }
     fetchTask()
   }, [taskMode, taskNum])
@@ -44,6 +50,21 @@ function Builder({ taskMode = false }) {
       console.error(err)
     }
   }, 500, [blockData])
+
+  useEffect(() => {
+    const checkTaskAnswer = async () => {
+      setTaskData(null)
+      if (!result || !taskMode) return
+      try {
+        const formated = result.replace(/<br\/*>/gm, ' ')
+        const { data } = await api.post(`/task/${taskNum}`, formated)
+        setTaskData(data)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    checkTaskAnswer()
+  }, [result, taskNum, taskMode])
 
   useEffect(() => {
     fetchQuery();
@@ -208,6 +229,9 @@ function Builder({ taskMode = false }) {
           </div>}
           {<pre dangerouslySetInnerHTML={{__html: result}}></pre>}
           {error && <p className="result-error">{error}</p>}
+          {taskMode && taskData && <div className="task-result" data-correct={taskData.isCorrect}>
+            <pre dangerouslySetInnerHTML={{ __html: taskData.result }}></pre>
+          </div>}
           <pre
           className="json"
           dangerouslySetInnerHTML={{ __html: syntaxHighlight(JSON.stringify(blockData, null, 4))}}></pre>
