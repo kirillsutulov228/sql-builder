@@ -1,0 +1,28 @@
+@import '../../index.scss';
+
+.index-layout {
+  .main-header {
+    height: $headerHeight;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #0000ff;
+    box-sizing: border-box;
+    .logo {
+      font-size: 32px;
+      font-weight: bold;
+    }
+    .header-nav {
+      transform: translateY(3px);
+      a {
+        text-decoration: none;
+        color: black;
+        font-size: 24px;
+        margin-left: 24px;
+        &.active {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
