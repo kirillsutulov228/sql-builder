@@ -18,25 +18,37 @@ public class CheckAnswerService
 
         string DbPath = @"DataBase\TaskDB.db";
         List<Dictionary<string, string>> answerRes = new List<Dictionary<string, string>>();
+        List<Dictionary<string, string>> userRes = new List<Dictionary<string, string>>();
         using (SqliteConnection con = new SqliteConnection($"Data Source={DbPath}"))
         {
             con.Open();
             SqliteCommand cmd = con.CreateCommand();
             cmd.Connection = con;
             cmd.CommandText = userQuery;
-            List<Dictionary<string, string>> userRes = SqlResultReader(cmd.ExecuteReader());
-            cmd.CommandText = _answerQuery;
-            answerRes = SqlResultReader(cmd.ExecuteReader());
-            if (!CompareResults(userRes, answerRes))
+            try
             {
-                taskResultDto.result = "К сожалению, результат запроса, который был составлен вами, оказался неверным." +
-                     " Попробуйте составить инчае и отправить снова!";
+                userRes = SqlResultReader(cmd.ExecuteReader());
+                cmd.CommandText = _answerQuery;
+                answerRes = SqlResultReader(cmd.ExecuteReader());
+            }
+            catch(SqliteException e)
+            {
+                taskResultDto.result = e.Message;
                 taskResultDto.isCorrect = false;
                 return taskResultDto;
             }
         }
+
         TableView tableView = new TableView();
-        
+
+        if (!CompareResults(userRes, answerRes))
+        {
+            taskResultDto.result = $"К сожалению, результат запроса, который был составлен вами, оказался неверным." +
+                 $" Попробуйте составить инчае и отправить снова!\nВаш запрос возвращает следующий результат:\n{tableView.GetTable(userRes)}";
+            taskResultDto.isCorrect = false;
+            return taskResultDto;
+        }
+
         taskResultDto.result = $"Отлично! Результат выполения собранного вами SQL запроса верный." +
             $"\nРеузльтат запроса выглядит следующим образом:\n{tableView.GetTable(answerRes)}";
         taskResultDto.isCorrect = true;

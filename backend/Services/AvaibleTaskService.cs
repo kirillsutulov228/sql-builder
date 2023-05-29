@@ -7,18 +7,6 @@ public class AvaibleTaskService
         List<TaskInfo> tasks = new List<TaskInfo>();
         using(TaskDbContext db = new TaskDbContext())
         {
-            //Task task3 = new Task
-            //{
-            //    taskNum = 3,
-            //    taskName = "Первые условия",
-            //    taskDescription = "Вам необходимо написать запрос SELECT так, чтобы " +
-            //    "в результате выполения запроса были выведены значения полей userId, firstname и age только тех пользователей, чем возраст достиг 18, из таблицы Users.",
-            //    correctAnswer = "SELECT userId, firstname, age FROM Users WHERE age > 17"
-            //};
-
-            //db.Tasks.AddRange(task1, task2, task3);
-            //db.SaveChanges();
-
             var rawTasks = db.Tasks.FromSqlRaw("SELECT * FROM Tasks").ToList();
             tasks = convertRawTasks(rawTasks);
 
