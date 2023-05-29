@@ -7,10 +7,11 @@ public class SqlTranslatorController : Controller
     private AvaibleTaskService _taskService;
     private CheckAnswerService _checkAnswerService;
 
-    public SqlTranslatorController(SqlTranslatorService sqlTranslatorService, AvaibleTaskService taskService)
+    public SqlTranslatorController(SqlTranslatorService sqlTranslatorService, AvaibleTaskService taskService, CheckAnswerService checkAnswerService)
     {
         _sqlTranslatorService = sqlTranslatorService;
         _taskService = taskService;
+        _checkAnswerService = checkAnswerService;
     }
 
     [HttpPost("query/parse")]
