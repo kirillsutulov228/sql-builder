@@ -3,6 +3,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<ExampleService>();
 builder.Services.AddScoped<SqlTranslatorService>();
 builder.Services.AddScoped<AvaibleTaskService>();
+builder.Services.AddScoped<CheckAnswerService>();
 builder.Services.AddDbContext<TaskDbContext>();
 builder.Services.AddCors();
 

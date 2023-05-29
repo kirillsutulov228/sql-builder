@@ -5,6 +5,7 @@ public class SqlTranslatorController : Controller
 {
     private SqlTranslatorService _sqlTranslatorService;
     private AvaibleTaskService _taskService;
+    private CheckAnswerService _checkAnswerService;
 
     public SqlTranslatorController(SqlTranslatorService sqlTranslatorService, AvaibleTaskService taskService)
     {
@@ -21,10 +22,10 @@ public class SqlTranslatorController : Controller
     [HttpPost("task/{taskNumber}")]
     public IActionResult CheckAnswer(int taskNumber, [FromBody] string query)
     {
-        return base.Ok(taskNumber);
+        return base.Ok(_checkAnswerService.Check(taskNumber, query));
     }
 
-    [HttpPost("api/tasks/{taskNum}")]
+    [HttpGet("tasks/{taskNum}")]
     public IActionResult GetTaskByNum(int taskNum)
     {
         return base.Ok(_taskService.GetTaskByNum(taskNum));

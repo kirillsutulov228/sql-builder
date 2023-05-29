@@ -32,13 +32,12 @@ public class AvaibleTaskService
         using (TaskDbContext db = new TaskDbContext())
         {
             var rawTasks = db.Tasks.FromSqlRaw("SELECT * FROM Tasks").ToList();
-            foreach(Task task in rawTasks)
-                if(task.taskNum == taskNum)
+            foreach (Task task in rawTasks)
+                if (task.taskNum == taskNum)
                 {
-                    taskInfo = new TaskInfo { taskNum = task.taskNum, taskName = task.taskName, taskDescription = task.taskDescription};
+                    taskInfo = new TaskInfo { taskNum = task.taskNum, taskName = task.taskName, taskDescription = task.taskDescription };
                     break;
                 }
-
         }
         return taskInfo;
     }

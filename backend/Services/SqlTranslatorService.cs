@@ -1,4 +1,7 @@
-﻿public class SqlTranslatorService
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+
+public class SqlTranslatorService
 {
     public Tuple<String, ErrorNode> Translate(List<RawQueryNode> rawQueryNodes)
     {
@@ -12,20 +15,10 @@
         error.blockId = syntAnalyzer.error.Item1;
         error.message = syntAnalyzer.error.Item2;
 
-        //using (TaskDbContext taskDb = new TaskDbContext())
-        //{
-        //    string first = Console.ReadLine();
-        //    string last = Console.ReadLine();
-        //    var user = new User
-        //    {
-        //        firstname = first,
-        //        lastname = last,
-        //        registrationDate = new DateOnly(2023, 5, 30)
-        //    };
+        string query = "SELECT * FROM Users";
 
-        //    taskDb.Add(user);
-        //    taskDb.SaveChanges();
-        //}
+        CheckAnswerService checkAnswerService = new CheckAnswerService();
+        Console.WriteLine(checkAnswerService.Check(1, query));
 
         return new Tuple<string, ErrorNode>(syntTree.toSql(), error);
     }
