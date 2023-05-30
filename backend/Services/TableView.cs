@@ -7,7 +7,7 @@
     public string GetTable(List<Dictionary<string, string>> values)
     {
         string table = $"{GetLine()}{GetRow(values.First(), true)}{GetLine()}";
-        foreach(Dictionary<string, string> value in values)
+        foreach (Dictionary<string, string> value in values)
         {
             table += GetRow(value);
             table += GetLine();
@@ -24,7 +24,7 @@
 
         foreach (var column in columns)
         {
-            if(!isName) row += AlignCentre(column.Value, width) + "|";
+            if (!isName) row += AlignCentre(column.Value, width) + "|";
             else row += AlignCentre(column.Key, width) + "|";
         }
         return $"{row}<br/>";
@@ -42,5 +42,25 @@
         {
             return text.PadRight(width - (width - text.Length) / 2).PadLeft(width);
         }
+    }
+
+    public TableDto GetJSONTable(List<Dictionary<string, string>> values)
+    {
+        List<string> columnNames = new List<string>(values.First().Keys);
+        List<List<string>> columnValues = new List<List<string>>();
+
+        foreach (Dictionary<string, string> column in values)
+        {
+            List<string> columnValue = new List<string>(column.Values);
+            columnValues.Add(columnValue);
+        }
+
+        TableDto table = new TableDto()
+        {
+            columnNames = columnNames.ToArray(),
+            columnValues = columnValues.Select(a => a.ToArray()).ToArray()
+        };
+
+        return table;
     }
 }

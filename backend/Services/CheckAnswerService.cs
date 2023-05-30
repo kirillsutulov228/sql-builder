@@ -43,14 +43,18 @@ public class CheckAnswerService
 
         if (!CompareResults(userRes, answerRes))
         {
+            Console.WriteLine(tableView.GetTable(userRes));
             taskResultDto.result = $"К сожалению, результат запроса, который был составлен вами, оказался неверным." +
-                 $" Попробуйте составить инчае и отправить снова!\nВаш запрос возвращает следующий результат:\n{tableView.GetTable(userRes)}";
+                 $" Попробуйте составить инчае и отправить снова!\nВаш запрос возвращает следующий результат:\n";
+            taskResultDto.table = tableView.GetJSONTable(userRes);
             taskResultDto.isCorrect = false;
             return taskResultDto;
         }
 
+        Console.WriteLine(tableView.GetTable(userRes));
         taskResultDto.result = $"Отлично! Результат выполения собранного вами SQL запроса верный." +
-            $"\nРеузльтат запроса выглядит следующим образом:\n{tableView.GetTable(answerRes)}";
+            $"\nРеузльтат запроса выглядит следующим образом:\n";
+        taskResultDto.table = tableView.GetJSONTable(userRes);
         taskResultDto.isCorrect = true;
         return taskResultDto;
     }
