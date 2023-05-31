@@ -15,13 +15,13 @@ function Builder({ taskMode = false }) {
   const [selectData, setSelectData] = useSelectContext()
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null)
-  const [taskData, setTaskData] = useState(null)
+  const [taskAnswerData, setTaskAnswerData] = useState(null)
   const [task, setTask] = useState(null)
   const { taskNum } = useParams();
 
   useEffect(() => {
     return () => {
-      setTaskData(null)
+      setTaskAnswerData(null)
       setBlockData([])
     }
   }, [setBlockData])
@@ -53,12 +53,12 @@ function Builder({ taskMode = false }) {
 
   useEffect(() => {
     const checkTaskAnswer = async () => {
-      setTaskData(null)
+      setTaskAnswerData(null)
       if (!result || !taskMode) return
       try {
         const formated = result.replace(/<br\/*>/gm, ' ')
         const { data } = await api.post(`/task/${taskNum}`, formated)
-        setTaskData(data)
+        setTaskAnswerData(data)
       } catch (err) {
         console.error(err)
       }
@@ -229,8 +229,22 @@ function Builder({ taskMode = false }) {
           </div>}
           {<pre dangerouslySetInnerHTML={{__html: result}}></pre>}
           {error && <p className="result-error">{error}</p>}
-          {taskMode && taskData && <div className="task-result" data-correct={taskData.isCorrect}>
-            <pre dangerouslySetInnerHTML={{ __html: taskData.result }}></pre>
+          {taskMode && taskAnswerData && <div className="task-result" data-correct={taskAnswerData.isCorrect}>
+            <pre className="task-result-text">{taskAnswerData.result}</pre>
+            {taskAnswerData.table && <>
+              <table className="result-table">
+                <thead>
+                  {taskAnswerData.table.columnNames.map((v) => <th>{v}</th>)}
+                </thead>
+                <tbody>
+                  {taskAnswerData.table.columnValues.map((row) => <tr>
+                    {row.map((col) => <td>
+                      {col}
+                    </td>)}
+                  </tr>)}
+                </tbody>
+              </table>
+            </>}
           </div>}
           <pre
           className="json"
