@@ -117,6 +117,14 @@
             case BlockType.HAVING:
                 ret += $"<br/>{space}HAVING ";
                 break;
+            case BlockType.JOIN:
+                string type = "";
+                if(_value != null && _value.Values.First() != null) type = $"{_value.Values.First()} ";
+                ret += $"<br/>{space}{type}JOIN ";
+                break;
+            case BlockType.ON:
+                ret += $"<br/>{space}ON ";
+                break;
         }
         return ret;
     }
