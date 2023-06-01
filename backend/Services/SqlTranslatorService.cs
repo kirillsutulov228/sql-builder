@@ -15,9 +15,10 @@ public class SqlTranslatorService
         error.blockId = syntAnalyzer.error.Item1;
         error.message = syntAnalyzer.error.Item2;
 
-        //string query = "SELECT * FROM Users";
+        //string query = "SELECT userId, firstname, age FROM Users";
 
         //CheckAnswerService checkAnswerService = new CheckAnswerService();
+        //checkAnswerService.Check(2, query);
         //Console.WriteLine(checkAnswerService.Check(1, query).result);
 
         return new Tuple<string, ErrorNode>(syntTree.toSql(), error);

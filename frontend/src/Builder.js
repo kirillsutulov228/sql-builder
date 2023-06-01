@@ -186,9 +186,19 @@ function Builder({ taskMode = false }) {
           <BuildBlock className={'select-block'} blockType="TABLE_NAME"/>
           <BuildBlock className={'select-block'} blockType={"FIELD_NAME"}/>
           <BuildBlock className={'select-block'} blockType={"WHERE"}/>
-          <BuildBlock className={'select-block'} blockType={"CONDITION"}/>
+		  <BuildBlock className={'select-block'} blockType={"CONDITION"}/>
           <BuildBlock className={'select-block'} blockType={"AND"}/>
           <BuildBlock className={'select-block'} blockType={"OR"}/>
+		  <BuildBlock className={'select-block'} blockType={"JOIN"}/>
+		  <BuildBlock className={'select-block'} blockType={"GROUP_BY"}/>
+		  <BuildBlock className={'select-block'} blockType={"ORDER_BY"}/>
+		  <BuildBlock className={'select-block'} blockType={"ON"}/>
+		  <BuildBlock className={'select-block'} blockType={"COUNT"}/>
+		  <BuildBlock className={'select-block'} blockType={"MAX"}/>
+		  <BuildBlock className={'select-block'} blockType={"MIN"}/>
+		  <BuildBlock className={'select-block'} blockType={"SUM"}/>
+		  <BuildBlock className={'select-block'} blockType={"AVG"}/>
+		  <BuildBlock className={'select-block'} blockType={"HAVING"}/>
         </div>
       </nav>
       <div className="build-section">

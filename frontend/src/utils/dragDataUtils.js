@@ -10,7 +10,15 @@ export const blockTypes = {
   SELECT: 'SELECT',
   FIELD_NAME: 'FIELD_NAME',
   TABLE_NAME: 'TABLE_NAME',
-  CONDITION: 'CONDITION'
+  CONDITION: 'CONDITION',
+  JOIN: 'JOIN',
+  ORDER_BY: "ORDER_BY",
+  GROUP_BY: "GROUP_BY",
+  COUNT: 'COUNT',
+  MAX: 'MAX',
+  MIN: 'MIN',
+  SUM: 'SUM',
+  AVG: 'AVG',
 }
 
 export function buildPropertiesByBlockType(blockType) {
@@ -29,6 +37,30 @@ export function buildPropertiesByBlockType(blockType) {
         operation: { title: 'Операция', value: null },
         second: { title: 'Значение 2', value: null }
       }
+	case blockTypes.JOIN:
+	  return {
+		type: { title: 'Вид соеденинения', value: null }
+	  }
+	case blockTypes.COUNT:
+	  return {
+		value: { title: 'Псевдоним', value: null }
+	  }
+	case blockTypes.MAX:
+	  return {
+		value: { title: 'Псевдоним', value: null }
+	  }
+	case blockTypes.MIN:
+	  return {
+		value: { title: 'Псевдоним', value: null }
+	  }
+	case blockTypes.SUM:
+	  return {
+		value: { title: 'Псевдоним', value: null }
+	  }
+	case blockTypes.AVG:
+	  return {
+		value: { title: 'Псевдоним', value: null }
+	  }
     default:
       return {}
   }
