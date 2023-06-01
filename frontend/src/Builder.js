@@ -194,6 +194,8 @@ function Builder({ taskMode = false }) {
           <BuildBlock className={'select-block'} blockType={"JOIN"}/>
           <BuildBlock className={'select-block'} blockType={"GROUP_BY"}/>
           <BuildBlock className={'select-block'} blockType={"ORDER_BY"}/>
+          <BuildBlock className={'select-block'} blockType={"ASC"}/>
+          <BuildBlock className={'select-block'} blockType={"DESC"}/>
           <BuildBlock className={'select-block'} blockType={"ON"}/>
           <BuildBlock className={'select-block'} blockType={"COUNT"}/>
           <BuildBlock className={'select-block'} blockType={"MAX"}/>
