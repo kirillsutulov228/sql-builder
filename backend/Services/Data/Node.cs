@@ -123,7 +123,13 @@
                 ret += $"<br/>{space}{type}JOIN ";
                 break;
             case BlockType.ON:
-                ret += $"<br/>{space}ON ";
+                ret += $"ON ";
+                break;
+            case BlockType.ASC:
+                ret += $" ASC";
+                break;
+            case BlockType.DESC:
+                ret += $" DESC";
                 break;
         }
         return ret;

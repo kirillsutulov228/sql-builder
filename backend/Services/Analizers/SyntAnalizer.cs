@@ -266,6 +266,11 @@
         field._nodes = FieldNameNode();
         order._nodes.Add(field);
         if (_hasErrors) return order;
+        if (_curToken._type == BlockType.ASC || _curToken._type == BlockType.DESC)
+        {
+            NextToken();
+            order._nodes.Add(new Node(_prevToken._type, _prevToken._value));
+        }
         return order;
     }
 

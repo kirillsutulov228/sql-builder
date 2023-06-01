@@ -19,6 +19,8 @@
     SUM = 16,
     AVG = 17,
     HAVING = 18,
+    ASC = 19,
+    DESC = 20,
 }
 class Constants
 {
@@ -44,5 +46,7 @@ class Constants
         {"SUM", 16},
         {"AVG", 17},
         {"HAVING", 18},
+        {"ASC", 19},
+        {"DESC", 20},
     };
 }
