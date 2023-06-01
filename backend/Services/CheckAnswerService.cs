@@ -16,7 +16,7 @@ public class CheckAnswerService
             _answerQuery = tasksRes.First().correctAnswer;
         }
 
-        string DbPath = @"DataBase\TaskDB.db";
+        string DbPath = @"DataBase\TaskDbMain.db";
         List<Dictionary<string, string>> answerRes = new List<Dictionary<string, string>>();
         List<Dictionary<string, string>> userRes = new List<Dictionary<string, string>>();
         using (SqliteConnection con = new SqliteConnection($"Data Source={DbPath}"))

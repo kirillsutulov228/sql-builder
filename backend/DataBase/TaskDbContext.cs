@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using backend.DataBase.Models;
+using Microsoft.EntityFrameworkCore;
 
 public class TaskDbContext : DbContext
 {
     public DbSet<Task> Tasks { get; set; }
     public DbSet<User> Users { get; set; }
-
+    public DbSet<Post> Posts { get; set; }
     public string DbPath { get; }
     public TaskDbContext()
     {
@@ -19,5 +20,6 @@ public class TaskDbContext : DbContext
     {
         modelBuilder.Entity<Task>().ToTable("Tasks");
         modelBuilder.Entity<User>().ToTable("Users");
+        modelBuilder.Entity<Post>().ToTable("Posts");
     }
 }

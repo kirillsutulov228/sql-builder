@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace backend.Migrations
 {
     [DbContext(typeof(TaskDbContext))]
-    partial class TaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230531184328_ChangeHobbyToCountry")]
+    partial class ChangeHobbyToCountry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
@@ -51,11 +54,11 @@ namespace backend.Migrations
                     b.Property<int>("age")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("firstname")
-                        .IsRequired()
+                    b.Property<string>("country")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("hobby")
+                    b.Property<string>("firstname")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("lastname")
@@ -68,49 +71,6 @@ namespace backend.Migrations
                     b.HasKey("userId");
 
                     b.ToTable("Users", (string)null);
-                });
-
-            modelBuilder.Entity("backend.DataBase.Models.Post", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AuthoruserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthoruserId");
-
-                    b.ToTable("Posts", (string)null);
-                });
-
-            modelBuilder.Entity("backend.DataBase.Models.Post", b =>
-                {
-                    b.HasOne("User", "Author")
-                        .WithMany("Posts")
-                        .HasForeignKey("AuthoruserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
-                });
-
-            modelBuilder.Entity("User", b =>
-                {
-                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }

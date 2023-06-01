@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using backend.DataBase.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class User
 {
@@ -9,6 +10,8 @@ public class User
     public DateOnly registrationDate { get; set; }
     public int age { get; set; }
     public string? hobby { get; set; }
+
+    public List<Post> Posts { get; set; }
 
     public bool Equals(User comparableUser)
     {
