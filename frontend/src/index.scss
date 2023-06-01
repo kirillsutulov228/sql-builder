@@ -68,7 +68,13 @@ code {
   }
   .block-select-menu-title {
     margin: 16px 0;
-    font-size: 16px;
+    font-size: 24px;
+  }
+  .block-group {
+    margin-top: 32px;
+    &:first-of-type {
+      margin-top: 0;
+    }
   }
   .info-menu {
     background-color: #ffffff;

@@ -9,6 +9,25 @@ import { useDebouncedCallback } from "./utils/hooks";
 import { api } from "./utils/axios";
 import { produce } from "immer";
 import { useParams } from "react-router";
+{/*
+<BuildBlock className={'select-block'} blockType={"JOIN"}/>
+<BuildBlock className={'select-block'} blockType={"GROUP_BY"}/>
+<BuildBlock className={'select-block'} blockType={"ON"}/>
+<BuildBlock className={'select-block'} blockType={"COUNT"}/>
+<BuildBlock className={'select-block'} blockType={"MAX"}/>
+<BuildBlock className={'select-block'} blockType={"MIN"}/>
+<BuildBlock className={'select-block'} blockType={"SUM"}/>
+<BuildBlock className={'select-block'} blockType={"AVG"}/>
+<BuildBlock className={'select-block'} blockType={"HAVING"}/> */}
+
+const buildBlockGroups = () => {
+  return [
+    { name: 'Выборка', types: ['QUERY', 'SELECT', 'FROM', 'TABLE_NAME', 'FIELD_NAME'], isOpen: true },
+    { name: 'Условия', 'types': ['WHERE', 'CONDITION', 'AND', 'OR'], isOpen: true },
+    { name: 'Сортировка', 'types': ['ORDER_BY', 'ASC', 'DESC'], isOpen: true },
+    { name: 'Агрегирование', 'types': ['JOIN', 'GROUP_BY', 'HAVING', 'ON', 'COUNT', 'MAX', 'MIN', 'SUM', 'AVG'], isOpen: true }
+  ]
+}
 
 function Builder({ taskMode = false }) {
   const [blockData, setBlockData] = useBlockData()
@@ -18,6 +37,7 @@ function Builder({ taskMode = false }) {
   const [taskAnswerData, setTaskAnswerData] = useState(null)
   const [task, setTask] = useState(null)
   const { taskNum } = useParams();
+  const [blockGroups, setBlockGroups] = useState(() => buildBlockGroups())
 
   useEffect(() => {
     return () => {
@@ -177,12 +197,25 @@ function Builder({ taskMode = false }) {
     setTimeout(() => setBlockData((data) => withRecalculatedNestedPositions(data)))
   }, [blockData, setBlockData, setSelectData])
   
+  const toggleVisibleByName = useCallback((name) => {
+    setBlockGroups(produce((curr) => {
+      const selected = curr.find(v => v.name === name)
+      selected.isOpen = !selected.isOpen
+    }))
+  }, [])
+
   return (
     <div className="b-content">
       <nav role="menu" className="menu">
         <div className="block-select-menu">
           <p className="block-select-menu-title">Блоки</p>
-          <BuildBlock className={'select-block'} blockType="QUERY"/>
+          {blockGroups.map((o) => (
+            <div className="block-group">
+              <p>{o.name} <button onClick={() => toggleVisibleByName(o.name)}>{o.isOpen ? 'Скрыть' : 'Показать'}</button></p>
+              {o.isOpen && o.types.map((type) => <BuildBlock className={'select-block'} blockType={type}/>)}
+            </div>
+          ))}
+          {/* <BuildBlock className={'select-block'} blockType="QUERY"/>
           <BuildBlock className={'select-block'} blockType="SELECT"/>
           <BuildBlock className={'select-block'} blockType="FROM"/>
           <BuildBlock className={'select-block'} blockType="TABLE_NAME"/>
@@ -202,7 +235,7 @@ function Builder({ taskMode = false }) {
           <BuildBlock className={'select-block'} blockType={"MIN"}/>
           <BuildBlock className={'select-block'} blockType={"SUM"}/>
           <BuildBlock className={'select-block'} blockType={"AVG"}/>
-          <BuildBlock className={'select-block'} blockType={"HAVING"}/>
+          <BuildBlock className={'select-block'} blockType={"HAVING"}/> */}
         </div>
       </nav>
       <div className="build-section">
