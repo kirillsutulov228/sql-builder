@@ -39,7 +39,7 @@ export function buildPropertiesByBlockType(blockType) {
       }
 	case blockTypes.JOIN:
 	  return {
-		type: { title: 'Вид соеденинения', value: null }
+		  type: { title: 'Вид соеденинения', value: null }
 	  }
 	case blockTypes.COUNT:
 	  return {
@@ -47,19 +47,19 @@ export function buildPropertiesByBlockType(blockType) {
 	  }
 	case blockTypes.MAX:
 	  return {
-		value: { title: 'Псевдоним', value: null }
+		  value: { title: 'Псевдоним', value: null }
 	  }
 	case blockTypes.MIN:
 	  return {
-		value: { title: 'Псевдоним', value: null }
+		  value: { title: 'Псевдоним', value: null }
 	  }
 	case blockTypes.SUM:
 	  return {
-		value: { title: 'Псевдоним', value: null }
+		  value: { title: 'Псевдоним', value: null }
 	  }
 	case blockTypes.AVG:
 	  return {
-		value: { title: 'Псевдоним', value: null }
+		  value: { title: 'Псевдоним', value: null }
 	  }
     default:
       return {}
@@ -120,7 +120,7 @@ export const getDragDataFromEvent = (event) => {
 export const mapBlockData = (blockData, mapper) => {
   const newTree = []
   const traverse = (item) => {
-    const result = mapper({ ...item })
+    const result = { ...mapper({ ...item }), children: null }
     if (item.children) {
       result.children = []
       for (const child of item.children) {
