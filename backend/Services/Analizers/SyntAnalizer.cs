@@ -252,6 +252,7 @@
             if (!Expect(BlockType.CONDITION)) return having;
             having._nodes = new List<Node>();
             having._nodes.Add(ConditionNode());
+            group._nodes.Add(having);
         }
         return group;
     }
@@ -271,6 +272,7 @@
             NextToken();
             order._nodes.Add(new Node(_prevToken._type, _prevToken._value));
         }
+        g
         return order;
     }
 
